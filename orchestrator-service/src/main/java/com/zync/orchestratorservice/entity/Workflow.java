@@ -1,5 +1,6 @@
 package com.zync.orchestratorservice.entity;
 
+import com.zync.domain.enums.WorkflowStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,8 +31,9 @@ public class Workflow {
     @Column(name = "trigger_id", nullable = false, unique = true)
     private String triggerId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status = "DRAFT"; // DRAFT, ACTIVE, PAUSED
+    private WorkflowStatus status = WorkflowStatus.DRAFT;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

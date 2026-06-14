@@ -14,6 +14,8 @@
     <modules>
         <!-- This links your library to the main project! -->
         <module>common-libs</module>
+        <module>orchestrator-service</module>
+        <module>ingestion-service</module>
     </modules>
 
 </project>

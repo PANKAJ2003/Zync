@@ -1,5 +1,6 @@
 package com.zync.orchestratorservice.service;
 
+import com.zync.domain.enums.WorkflowStatus;
 import com.zync.orchestratorservice.dto.WorkflowCreateRequestDTO;
 import com.zync.orchestratorservice.entity.Workflow;
 import com.zync.orchestratorservice.entity.WorkflowStep;
@@ -25,13 +26,13 @@ public class WorkflowService {
     public String createWorkflow(WorkflowCreateRequestDTO request) {
 
         // Generate a unique Webhook URL ID
-        String triggerId = "wh_" + UUID.randomUUID().toString();
+        String triggerId = "wh_" + UUID.randomUUID();
 
         Workflow workflow = Workflow.builder()
                 .triggerId(triggerId)
                 .name(request.name())
                 .description(request.description())
-                .status("ACTIVE")
+                .status(WorkflowStatus.ACTIVE)
                 .build();
 
         workflowRepository.save(workflow);
