@@ -1,0 +1,39 @@
+server:
+  port: 8082 # Orchestrator runs on 8082
+
+spring:
+  application:
+    name: orchestrator-service
+
+  # Enable Java 21+ Virtual Threads for massive scalability!
+  threads:
+    virtual:
+      enabled: true
+
+  # PostgreSQL Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/workflow_db
+    username: admin
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  # Hibernate Configuration (Auto-creates our tables for now)
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Kafka Consumer Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: "zync-orchestrator-group" # The Consumer Group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.zync.domain.events" # Trusts our WebhookEvent class!

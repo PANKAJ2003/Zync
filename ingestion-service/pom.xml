@@ -18,6 +18,7 @@
         <java.version>25</java.version>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
+        <jackson-bom.version>3.2.0</jackson-bom.version>
     </properties>
 
     <!-- THIS IS HOW WE GET SPRING BOOT 4.0.6 WITHOUT BREAKING THE MONOREPO -->
@@ -30,6 +31,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>2.22</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -39,6 +45,20 @@
             <groupId>com.zync</groupId>
             <artifactId>common-libs</artifactId>
             <version>1.0-SNAPSHOT</version> <!-- Ensure this matches common-libs version -->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Spring Web for REST APIs -->
@@ -59,13 +79,29 @@
             <optional>true</optional>
         </dependency>
 
+<!--        &lt;!&ndash; Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-databind</artifactId>-->
+<!--            <version>2.22.0</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
+
         <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-databind -->
         <dependency>
             <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>3.1.3</version>
+            <version>3.2.0</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>3.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+
 
         <!-- Spring Boot Starter Test -->
         <dependency>
@@ -76,6 +112,8 @@
 
 
     </dependencies>
+
+
 
     <build>
         <plugins>
