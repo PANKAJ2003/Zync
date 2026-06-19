@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: executor-service
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: 8083

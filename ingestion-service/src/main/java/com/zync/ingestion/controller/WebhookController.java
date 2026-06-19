@@ -1,10 +1,10 @@
 package com.zync.ingestion.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zync.domain.events.WebhookEvent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
-import tools.jackson.databind.JsonNode;
 
 import java.time.Instant;
 import java.util.UUID;
