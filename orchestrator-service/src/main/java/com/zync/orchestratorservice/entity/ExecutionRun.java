@@ -41,4 +41,5 @@ public class ExecutionRun {
 
     @Column(name = "completed_at")
     private Instant completedAt;
+
 }

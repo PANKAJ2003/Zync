@@ -27,6 +27,7 @@
         <module>common-libs</module>
         <module>orchestrator-service</module>
         <module>ingestion-service</module>
+        <module>executor-service</module>
     </modules>
 
 </project>
