@@ -11,6 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+/**
+ * Service responsible for creating and managing workflows.
+ * Handles the persistence of workflow definitions along with their
+ * ordered steps, and generates unique webhook trigger IDs.
+ */
 @Service
 public class WorkflowService {
     private final WorkflowRepository workflowRepository;
@@ -22,6 +27,15 @@ public class WorkflowService {
     }
 
 
+    /**
+     * Creates a new workflow with the given configuration. Generates a unique
+     * trigger ID prefixed with "wh_", persists the workflow entity, and saves
+     * all associated steps in order.
+     *
+     * @param request the workflow creation details including name, description,
+     *                and ordered list of steps
+     * @return the generated webhook trigger ID for the workflow
+     */
     @Transactional
     public String createWorkflow(WorkflowCreateRequestDTO request) {
 
