@@ -10,6 +10,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * Consumer that listens for task execution events from the "task-execution" Kafka topic
+ * and processes them by routing to the appropriate action handler. After execution,
+ * the result is published to the "task-execution-result" topic for the orchestrator
+ * to pick up and continue the workflow.
+ */
 @Slf4j
 @Component
 public class TaskConsumer {
@@ -22,8 +28,18 @@ public class TaskConsumer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    /**
+     * Consumes a task execution event from the "task-execution" topic.
+     * Routes the task to the appropriate action based on its type, builds a result event
+     * with the outcome (success result or error message), and publishes it to the
+     * orchestrator's result topic.
+     *
+     * @param task the task execution event containing run ID, step ID, action type,
+     *             step configuration, and webhook payload
+     */
     @KafkaListener(topics = "task-execution", groupId = "executor-service")
     public void consume(TaskExecutionEvent task) {
+
         log.info("=================================================");
         log.info("EXECUTOR WOKE UP! Run ID: {}", task.getExecutionRunId());
 
@@ -48,6 +64,12 @@ public class TaskConsumer {
         sentTaskResult(result);
     }
 
+    /**
+     * Publishes a task result event to the "task-execution-result" topic keyed by
+     * the execution run ID so the orchestrator can resume the workflow.
+     *
+     * @param result the result event to send
+     */
     public void sentTaskResult(TaskResultEvent result) {
         String ORCHESTRATOR_TASK_RESULT_TOPIC = "task-execution-result";
         kafkaTemplate.send(ORCHESTRATOR_TASK_RESULT_TOPIC, result.getExecutionRunId().toString(), result);
