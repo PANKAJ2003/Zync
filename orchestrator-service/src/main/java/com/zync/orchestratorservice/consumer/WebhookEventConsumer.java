@@ -1,6 +1,7 @@
 package com.zync.orchestratorservice.consumer;
 
 import com.zync.domain.enums.RunStatus;
+import com.zync.domain.enums.WorkflowStatus;
 import com.zync.domain.events.TaskExecutionEvent;
 import com.zync.domain.events.WebhookEvent;
 import com.zync.orchestratorservice.entity.ExecutionRun;
@@ -49,6 +50,11 @@ public class WebhookEventConsumer {
         workflowRepository.findByTriggerId(event.getWebhookId()).ifPresentOrElse(
                 workflow -> {
                     log.info("✅ SUCCESS! Found matching workflow: {}", workflow.getName());
+
+                    if (workflow.getStatus() == WorkflowStatus.PAUSED) {
+                        log.info("Workflow is paused. Skipping execution.");
+                        return;
+                    }
 
                     UUID trackingId = UUID.fromString(event.getTraceId());
 

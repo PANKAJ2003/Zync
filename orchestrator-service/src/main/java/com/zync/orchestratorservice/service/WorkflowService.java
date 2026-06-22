@@ -2,10 +2,13 @@ package com.zync.orchestratorservice.service;
 
 import com.zync.domain.enums.WorkflowStatus;
 import com.zync.orchestratorservice.dto.WorkflowCreateRequestDTO;
+import com.zync.orchestratorservice.dto.WorkflowUpdateRequestDTO;
 import com.zync.orchestratorservice.entity.Workflow;
 import com.zync.orchestratorservice.entity.WorkflowStep;
+import com.zync.orchestratorservice.exception.WorkflowNotFoundException;
 import com.zync.orchestratorservice.repository.WorkflowRepository;
 import com.zync.orchestratorservice.repository.WorkflowStepRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +66,53 @@ public class WorkflowService {
         });
 
         return triggerId;
+    }
+
+    @Transactional
+    @CacheEvict(value = "workflowsCache", key = "#triggerId")
+    public void deleteWorkflow(String triggerId) {
+        Workflow workflow = workflowRepository.findByTriggerId(triggerId)
+                .orElseThrow(() -> new WorkflowNotFoundException(triggerId));
+        stepRepository.deleteByWorkflowId(workflow.getId());
+        workflowRepository.delete(workflow);
+    }
+
+    @Transactional
+    @CacheEvict(value = "workflowsCache", key = "#triggerId")
+    public void pauseWorkflow(String triggerId) {
+        Workflow workflow = workflowRepository.findByTriggerId(triggerId)
+                .orElseThrow(() -> new WorkflowNotFoundException(triggerId));
+        workflow.setStatus(WorkflowStatus.PAUSED);
+        workflowRepository.save(workflow);
+    }
+
+    @Transactional
+    @CacheEvict(value = "workflowsCache", key = "#triggerId")
+    public void resumeWorkflow(String triggerId) {
+        Workflow workflow = workflowRepository.findByTriggerId(triggerId)
+                .orElseThrow(() -> new WorkflowNotFoundException(triggerId));
+        workflow.setStatus(WorkflowStatus.ACTIVE);
+        workflowRepository.save(workflow);
+    }
+
+    @Transactional
+    @CacheEvict(value = "workflowsCache", key = "#triggerId")
+    public void updateWorkflow(String triggerId, WorkflowUpdateRequestDTO request) {
+        Workflow workflow = workflowRepository.findByTriggerId(triggerId)
+                .orElseThrow(() -> new WorkflowNotFoundException(triggerId));
+        workflow.setName(request.name());
+        workflow.setDescription(request.description());
+        stepRepository.deleteByWorkflowId(workflow.getId());
+        request.steps().forEach(step -> {
+            WorkflowStep workflowStep = WorkflowStep.builder()
+                    .workflow(workflow)
+                    .stepOrder(step.stepOrder())
+                    .actionType(step.actionType())
+                    .configuration(step.config())
+                    .build();
+            stepRepository.save(workflowStep);
+        });
+        workflowRepository.save(workflow);
     }
 
 }
