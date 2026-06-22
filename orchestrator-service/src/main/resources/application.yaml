@@ -51,3 +51,22 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      observation-enabled: true
+    template:
+      observation-enabled: true
+
+
+# OpenTelemetry Configuration
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0 # 100% of traces
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
