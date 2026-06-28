@@ -1,6 +1,7 @@
 package com.zync.orchestratorservice.consumer;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.zync.domain.enums.RunStatus;
 import com.zync.domain.enums.StepStatus;
 import com.zync.domain.events.TaskExecutionEvent;
@@ -82,8 +83,7 @@ public class TaskResultConsumer {
                                     .actionType(nextStep.getActionType())
                                     .stepConfig(nextStep.getConfiguration())
                                     .executionRunId(run.getId())
-                                    //TODO: Merge previous step result with current payload
-                                    .webhookPayload(run.getTriggerPayload())
+                                    .webhookPayload(appendStepResultToPayload(step.getStepOrder(), result.getResult(), run.getTriggerPayload()))
                                     .build();
 
                             kafkaTemplate.send("task-execution", run.getId().toString(), nextTask);
@@ -95,5 +95,21 @@ public class TaskResultConsumer {
                             executionRunRepository.save(run);
                         }
                 );
+    }
+
+    private JsonNode appendStepResultToPayload(int stepOrder, JsonNode stepResult, JsonNode currentPayload) {
+
+        // If payload isn't a JSON Object (e.g., it's a raw string/array), we can't easily append to it.
+        if (!currentPayload.isObject()) {
+            return currentPayload;
+        }
+
+        ObjectNode resultNode = (ObjectNode) currentPayload.deepCopy();
+
+        if (stepResult != null && !stepResult.isNull()) {
+            resultNode.set("step_" + stepOrder, stepResult);
+        }
+
+        return resultNode;
     }
 }

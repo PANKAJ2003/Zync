@@ -51,7 +51,7 @@ public class HttpActionAdapter implements AppActionAdapter {
 
         String url = stepConfig.path("url").asText();
         String method = stepConfig.path("method").asText();
-        String rawBody = stepConfig.path("body").isMissingNode() ? "" : stepConfig.path("body").asText();
+        String rawBody = stepConfig.path("body").isMissingNode() ? "" : stepConfig.path("body").toString();
 
         String resolvedUrl = TemplateResolver.resolve(url, webhookPayload);
         String resolvedBody = TemplateResolver.resolve(rawBody, webhookPayload);
