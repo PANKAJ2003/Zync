@@ -22,6 +22,15 @@ spring:
     template:
       observation-enabled: true
 
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY} # We can use any OpenAI compatible API key here
+      base-url: ${OPENAI_BASE_URL} # Use the base URL of the provider you are using in API Key
+      chat:
+        options:
+          model: nvidia/nemotron-3-ultra-550b-a55b:free
+
+
 resilience4j:
   retry:
     instances:
@@ -34,8 +43,6 @@ resilience4j:
           - java.io.IOException
           - java.util.concurrent.TimeoutException
           - org.springframework.web.client.RestClientException
-
-
 management:
   tracing:
     sampling:
