@@ -15,6 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+/**
+ * Adapter for the {@code HTTP_REQUEST} action type. Sends outbound HTTP
+ * calls with template-resolved URLs and bodies, backed by Resilience4j
+ * retry (3 attempts) for transient failures.
+ */
 @Slf4j
 @Component
 public class HttpActionAdapter implements AppActionAdapter {

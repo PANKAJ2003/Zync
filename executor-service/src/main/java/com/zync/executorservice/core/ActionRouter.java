@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Routes workflow steps to the appropriate {@link AppActionAdapter} based on
+ * the action type. Uses constructor injection to build a strategy map from
+ * all available adapter beans.
+ */
 @Slf4j
 @Service
 public class ActionRouter {
@@ -21,6 +26,15 @@ public class ActionRouter {
                 .collect(Collectors.toMap(AppActionAdapter::getActionType, adaptor -> adaptor));
     }
 
+    /**
+     * Looks up the adapter for the given action type and delegates execution.
+     * Returns a FAILED result if no adapter is registered for the type.
+     *
+     * @param actionType the action type key (e.g., HTTP_REQUEST, AI_PROMPT)
+     * @param config     step-specific configuration
+     * @param payload    the webhook payload for template resolution
+     * @return the execution result with status, result data, or error
+     */
     public TaskResultDTO routeAndExecute(String actionType, JsonNode config, JsonNode payload) {
         AppActionAdapter adapter = adapters.get(actionType);
 

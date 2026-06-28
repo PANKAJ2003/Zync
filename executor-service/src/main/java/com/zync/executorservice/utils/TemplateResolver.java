@@ -8,12 +8,24 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Resolves {@code {{$.json.path}}} placeholders in template strings against a
+ * webhook payload using Jayway JsonPath, enabling dynamic step configurations.
+ */
 @Slf4j
 public class TemplateResolver {
 
     // Regex to find anything that looks like {{$.something}}
     private static final Pattern PATTERN = Pattern.compile("\\{\\{(\\$\\.[^}]+)}}");
 
+    /**
+     * Replaces all {@code {{$.path}}} expressions in the template with values
+     * extracted from the payload. Unresolvable paths default to "UNKNOWN".
+     *
+     * @param template       the string containing optional placeholder expressions
+     * @param webhookPayload the JSON payload to query against
+     * @return the template with placeholders resolved, or the original if none found
+     */
     public static String resolve(String template, JsonNode webhookPayload) {
         if (template == null || !template.contains("{{")) {
             return template;

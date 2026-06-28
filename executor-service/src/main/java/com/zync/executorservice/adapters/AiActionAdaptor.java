@@ -11,6 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Component;
 
+/**
+ * Adapter for the {@code AI_PROMPT} action type. Resolves prompt templates
+ * against the webhook payload and invokes Spring AI's ChatClient for
+ * LLM-generated responses.
+ */
 @Slf4j
 @Component
 public class AiActionAdaptor implements AppActionAdapter {
@@ -26,6 +31,14 @@ public class AiActionAdaptor implements AppActionAdapter {
         return "AI_PROMPT";
     }
 
+    /**
+     * Resolves the prompt template, sends it to the AI model, and returns
+     * the generated text as the step result.
+     *
+     * @param stepConfig     must contain a "prompt" key with optional {{$.}} placeholders
+     * @param webhookPayload the payload used for placeholder resolution
+     * @return SUCCESS with generated text, or FAILED on API error
+     */
     @Override
     public TaskResultDTO execute(JsonNode stepConfig, JsonNode webhookPayload) {
 
