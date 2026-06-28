@@ -1,23 +1,20 @@
 server:
-  port: 8082 # Orchestrator runs on 8082
+  port: ${SERVER_PORT:-8082}
 
 spring:
   application:
     name: orchestrator-service
 
-  # Enable Java 21+ Virtual Threads for massive scalability!
   threads:
     virtual:
       enabled: true
 
-  # PostgreSQL Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/workflow_db
-    username: admin
-    password: password
+    url: ${DATABASE_URL:-jdbc:postgresql://localhost:5432/workflow_db}
+    username: ${DATABASE_USER:-admin}
+    password: ${DATABASE_PASSWORD:-password}
     driver-class-name: org.postgresql.Driver
 
-  # Hibernate Configuration (Auto-creates our tables for now)
   jpa:
     hibernate:
       ddl-auto: update
@@ -27,27 +24,25 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  # Redis Cache Configuration with TTL
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${VALKEY_HOST:-localhost}
+      port: ${VALKEY_PORT:-6379}
   cache:
     type: redis
     redis:
       time-to-live: 3600000
       cache-null-values: false
 
-  # Kafka Consumer Configuration
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:-localhost:9092}
     consumer:
-      group-id: "zync-orchestrator-group" # The Consumer Group
+      group-id: "zync-orchestrator-group"
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "com.zync.domain.events" # Trusts our WebhookEvent class!
+        spring.json.trusted.packages: "com.zync.domain.events"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -57,15 +52,13 @@ spring:
       observation-enabled: true
 
 
-# OpenTelemetry Configuration
-
 management:
   tracing:
     sampling:
-      probability: 1.0 # 100% of traces
+      probability: 1.0
   otlp:
     tracing:
-      endpoint: http://localhost:4318/v1/traces
+      endpoint: ${OTLP_ENDPOINT:-http://localhost:4318/v1/traces}
 
 logging:
   pattern:

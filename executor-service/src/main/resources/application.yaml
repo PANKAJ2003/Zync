@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: ${SERVER_PORT:-8083}
 
 spring:
   application:
@@ -8,7 +8,7 @@ spring:
     virtual:
       enabled: true
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:-localhost:9092}
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -24,11 +24,11 @@ spring:
 
   ai:
     openai:
-      api-key: ${OPENAI_API_KEY} # We can use any OpenAI compatible API key here
-      base-url: ${OPENAI_BASE_URL} # Use the base URL of the provider you are using in API Key
+      api-key: ${OPENAI_API_KEY}
+      base-url: ${OPENAI_BASE_URL}
       chat:
         options:
-          model: nvidia/nemotron-3-ultra-550b-a55b:free
+          model: ${AI_MODEL:-gpt-4o}
 
 
 resilience4j:
@@ -43,13 +43,14 @@ resilience4j:
           - java.io.IOException
           - java.util.concurrent.TimeoutException
           - org.springframework.web.client.RestClientException
+
 management:
   tracing:
     sampling:
-      probability: 1.0 # 100% of traces
+      probability: 1.0
   otlp:
     tracing:
-      endpoint: http://localhost:4318/v1/traces
+      endpoint: ${OTLP_ENDPOINT:-http://localhost:4318/v1/traces}
 
 logging:
   pattern:
