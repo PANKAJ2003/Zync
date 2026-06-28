@@ -34,7 +34,7 @@ public class AiActionAdaptor implements AppActionAdapter {
 
         log.info("Sending prompt to AI: {}", resolvedPrompt);
 
-        try{
+        try {
             String aiResponse = chatClient.prompt()
                     .user(resolvedPrompt)
                     .call()

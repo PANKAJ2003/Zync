@@ -5,5 +5,6 @@ import com.zync.executorservice.dto.TaskResultDTO;
 
 public interface AppActionAdapter {
     String getActionType();
+
     TaskResultDTO execute(JsonNode stepConfig, JsonNode webhookPayload);
 }
