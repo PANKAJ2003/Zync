@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * REST API for managing workflow lifecycle. Exposes endpoints to create,
+ * update, delete, pause, and resume workflow definitions.
+ */
 @RestController
 @RequestMapping("/api/v1/workflows")
 public class WorkflowController {
@@ -20,6 +24,12 @@ public class WorkflowController {
         this.workflowService = workflowService;
     }
 
+    /**
+     * Creates a new workflow with steps and returns the webhook trigger URL.
+     *
+     * @param request validated workflow definition with name and ordered steps
+     * @return 201 CREATED with the webhook URL for external callers
+     */
     @PostMapping
     public ResponseEntity<?> createWorkflow(
             @RequestBody @Valid WorkflowCreateRequestDTO request) {
@@ -32,24 +42,49 @@ public class WorkflowController {
         ));
     }
 
+    /**
+     * Deletes a workflow and its associated steps by trigger ID.
+     *
+     * @param triggerId the unique webhook trigger identifier
+     * @return 200 OK with confirmation message
+     */
     @DeleteMapping("/{triggerId}")
     public ResponseEntity<?> deleteWorkflow(@PathVariable String triggerId) {
         workflowService.deleteWorkflow(triggerId);
         return ResponseEntity.ok(Map.of("message", "Workflow deleted successfully"));
     }
 
+    /**
+     * Pauses an active workflow so incoming webhooks are skipped.
+     *
+     * @param triggerId the unique webhook trigger identifier
+     * @return 200 OK with confirmation message
+     */
     @PatchMapping("/{triggerId}/pause")
     public ResponseEntity<?> pauseWorkflow(@PathVariable String triggerId) {
         workflowService.pauseWorkflow(triggerId);
         return ResponseEntity.ok(Map.of("message", "Workflow paused successfully"));
     }
 
+    /**
+     * Resumes a paused workflow, re-enabling webhook processing.
+     *
+     * @param triggerId the unique webhook trigger identifier
+     * @return 200 OK with confirmation message
+     */
     @PatchMapping("/{triggerId}/resume")
     public ResponseEntity<?> resumeWorkflow(@PathVariable String triggerId) {
         workflowService.resumeWorkflow(triggerId);
         return ResponseEntity.ok(Map.of("message", "Workflow resumed successfully"));
     }
 
+    /**
+     * Replaces an existing workflow's definition and steps entirely.
+     *
+     * @param triggerId the unique webhook trigger identifier
+     * @param request   validated updated workflow definition
+     * @return 200 OK with confirmation message
+     */
     @PutMapping("/{triggerId}")
     public ResponseEntity<?> updateWorkflow(
             @PathVariable String triggerId,

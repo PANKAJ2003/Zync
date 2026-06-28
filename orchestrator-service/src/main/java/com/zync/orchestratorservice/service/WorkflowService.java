@@ -68,6 +68,13 @@ public class WorkflowService {
         return triggerId;
     }
 
+    /**
+     * Deletes a workflow and evicts it from the cache. Cascading delete removes
+     * all associated steps before removing the workflow itself.
+     *
+     * @param triggerId the unique webhook trigger identifier
+     * @throws WorkflowNotFoundException if no workflow matches the trigger ID
+     */
     @Transactional
     @CacheEvict(value = "workflowsCache", key = "#triggerId")
     public void deleteWorkflow(String triggerId) {
@@ -77,6 +84,12 @@ public class WorkflowService {
         workflowRepository.delete(workflow);
     }
 
+    /**
+     * Pauses a workflow, causing incoming webhook events to be skipped.
+     *
+     * @param triggerId the unique webhook trigger identifier
+     * @throws WorkflowNotFoundException if no workflow matches the trigger ID
+     */
     @Transactional
     @CacheEvict(value = "workflowsCache", key = "#triggerId")
     public void pauseWorkflow(String triggerId) {
@@ -86,6 +99,12 @@ public class WorkflowService {
         workflowRepository.save(workflow);
     }
 
+    /**
+     * Resumes a paused workflow, re-enabling webhook event processing.
+     *
+     * @param triggerId the unique webhook trigger identifier
+     * @throws WorkflowNotFoundException if no workflow matches the trigger ID
+     */
     @Transactional
     @CacheEvict(value = "workflowsCache", key = "#triggerId")
     public void resumeWorkflow(String triggerId) {
@@ -95,6 +114,14 @@ public class WorkflowService {
         workflowRepository.save(workflow);
     }
 
+    /**
+     * Replaces an existing workflow's definition and steps. The update is
+     * performed atomically within a single transaction with cache eviction.
+     *
+     * @param triggerId the unique webhook trigger identifier
+     * @param request   the updated workflow definition
+     * @throws WorkflowNotFoundException if no workflow matches the trigger ID
+     */
     @Transactional
     @CacheEvict(value = "workflowsCache", key = "#triggerId")
     public void updateWorkflow(String triggerId, WorkflowUpdateRequestDTO request) {

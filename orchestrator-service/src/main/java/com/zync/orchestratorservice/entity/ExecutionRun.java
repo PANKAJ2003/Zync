@@ -31,6 +31,10 @@ public class ExecutionRun {
     @Column(nullable = false)
     private RunStatus status;
 
+    /**
+     * The original webhook payload that triggered this run, stored as
+     * Postgres JSONB for schema-flexible access during step execution.
+     */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "trigger_payload", columnDefinition = "jsonb", nullable = false)
     private JsonNode triggerPayload;

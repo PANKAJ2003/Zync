@@ -14,6 +14,12 @@ import java.util.UUID;
 public interface WorkflowStepRepository extends JpaRepository<WorkflowStep, UUID> {
     Optional<WorkflowStep> getStepByWorkflowIdAndStepOrder(UUID workflowId, Integer stepOrder);
 
+    /**
+     * Bulk-deletes all steps belonging to a workflow. Uses a JPQL bulk
+     * operation to avoid loading each step entity individually.
+     *
+     * @param workflowId the parent workflow's UUID
+     */
     @Modifying
     @Query("DELETE FROM WorkflowStep ws WHERE ws.workflow.id = :workflowId")
     void deleteByWorkflowId(@Param("workflowId") UUID workflowId);

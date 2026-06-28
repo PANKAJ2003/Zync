@@ -34,7 +34,10 @@ public class WorkflowStep {
     @Column(name = "action_type", nullable = false)
     private String actionType; // e.g., "SLACK_MESSAGE"
 
-    // THE MAGIC: Stores dynamic schema-less JSON securely in Postgres!
+    /**
+     * Step-specific configuration stored as Postgres JSONB. Schema-less to
+     * support diverse action types (e.g., SLACK_MESSAGE, HTTP_REQUEST).
+     */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "configuration", columnDefinition = "jsonb", nullable = false)
     private JsonNode configuration;

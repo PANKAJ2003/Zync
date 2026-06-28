@@ -18,6 +18,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
+/**
+ * Consumes task execution results from the {@code task-execution-result} topic,
+ * logs each step outcome, and either dispatches the next step or marks the
+ * workflow run as completed or failed.
+ */
 @Slf4j
 @Component
 public class TaskResultConsumer {

@@ -17,6 +17,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Consumes webhook events from the {@code incoming-webhooks} Kafka topic,
+ * resolves the matching workflow, creates an execution run, and dispatches
+ * the first step to the {@code task-execution} topic.
+ */
 @Slf4j // Lombok annotation to give us the 'log' object automatically!
 @Service
 public class WebhookEventConsumer {
@@ -36,6 +41,12 @@ public class WebhookEventConsumer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    /**
+     * Processes an incoming webhook: looks up the workflow by trigger ID,
+     * creates an execution run, and forwards step 1 to the task executor.
+     *
+     * @param event the deserialized webhook event from Kafka
+     */
     // Listens to the exact topic the Ingestion Service writes to
     @KafkaListener(topics = "incoming-webhooks", groupId = "zync-orchestrator-group")
     public void consumeWebhook(WebhookEvent event) {
